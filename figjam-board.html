@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>akashkedia.com — developer handoff &amp; prototype</title>
+  <script type="module">
+    import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: "neutral",
+      securityLevel: "loose",
+      flowchart: { htmlLabels: true, curve: "basis" },
+    });
+  </script>
+  <style>
+    :root {
+      --bg: #ecece8;
+      --surface: #fafaf8;
+      --ink: #121212;
+      --muted: #5a5a5a;
+      --accent: #2563eb;
+      --accent-soft: #dbeafe;
+      --border: #1a1a1a;
+      --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+      --sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.5;
+      font-size: 15px;
+    }
+    main { max-width: 960px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+    h1 { font-size: 1.65rem; margin: 0 0 0.35rem; letter-spacing: -0.02em; }
+    .subtitle { color: var(--muted); margin: 0 0 1.5rem; font-size: 14px; }
+    h2 {
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin: 2.5rem 0 1rem;
+      padding-bottom: 0.35rem;
+      border-bottom: 2px solid var(--border);
+    }
+    h3 { font-size: 1rem; margin: 1.25rem 0 0.5rem; }
+    .callout {
+      background: #111;
+      color: #f0f0f0;
+      padding: 1.25rem 1.35rem;
+      border-radius: 8px;
+      margin: 1.5rem 0;
+      font-size: 14px;
+    }
+    .callout strong { color: #fff; }
+    .callout ol { margin: 0.5rem 0 0 1.1rem; padding: 0; }
+    .callout li { margin: 0.45rem 0; }
+    .callout code { background: #333; padding: 0.1rem 0.35rem; border-radius: 3px; font-size: 12px; }
+    .diagram-block {
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem;
+      margin: 1rem 0 2rem;
+      overflow-x: auto;
+    }
+    .diagram-block .cap { font-size: 12px; color: var(--muted); margin: 0 0 0.75rem; }
+    table.spec {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      margin: 0.75rem 0;
+    }
+    table.spec th, table.spec td {
+      border: 1px solid #bbb;
+      padding: 0.55rem 0.65rem;
+      vertical-align: top;
+      text-align: left;
+    }
+    table.spec th { background: #e4e4df; width: 22%; }
+    .copy-block {
+      background: var(--surface);
+      border: 1px solid #999;
+      border-radius: 8px;
+      padding: 1rem 1.15rem;
+      margin: 0.65rem 0;
+      font-size: 14px;
+    }
+    .copy-block .label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--muted);
+      margin-bottom: 0.35rem;
+    }
+    pre.interaction {
+      font-family: var(--mono);
+      font-size: 12px;
+      background: #0d0d0d;
+      color: #e8e8e8;
+      padding: 1rem;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 0.5rem 0;
+      white-space: pre-wrap;
+    }
+    ul.tight { margin: 0.25rem 0 0 1.1rem; padding: 0; }
+    ul.tight li { margin: 0.25rem 0; }
+
+    /* --- prototype (HTML/CSS stand-in for screenshot; devs implement from this) --- */
+    #site-prototype {
+      margin: 1.5rem 0 2.5rem;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 2px solid var(--border);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+      background: #c8c8c4;
+      padding: 10px;
+    }
+    .proto-chrome {
+      background: #e8e8e6;
+      border-radius: 8px 8px 0 0;
+      padding: 8px 12px;
+      font-size: 11px;
+      font-family: var(--mono);
+      color: #444;
+      border-bottom: 1px solid #aaa;
+    }
+    .proto-chrome span { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
+    .proto-chrome .d1 { background: #ff5f57; }
+    .proto-chrome .d2 { background: #febc2e; }
+    .proto-chrome .d3 { background: #28c840; }
+    .proto-page {
+      background: #fafaf8;
+      min-height: 520px;
+      padding: 0;
+    }
+    .proto-status {
+      font-family: var(--mono);
+      font-size: 11px;
+      padding: 6px 14px;
+      background: #1a1a1a;
+      color: #b4f7b4;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .proto-nav {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px 20px;
+      padding: 12px 16px;
+      border-bottom: 1px solid #ccc;
+      font-size: 13px;
+    }
+    .proto-nav a {
+      color: var(--ink);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+    }
+    .proto-nav a:hover { border-bottom-color: var(--ink); }
+    .proto-mode {
+      margin-left: auto;
+      display: flex;
+      font-family: var(--mono);
+      font-size: 11px;
+      border: 1px solid #333;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .proto-mode span { padding: 5px 10px; cursor: default; }
+    .proto-mode .on { background: #111; color: #fff; }
+    .proto-mode .off { background: #eee; color: #555; }
+    .proto-hero {
+      padding: 28px 18px 24px;
+      max-width: 52rem;
+    }
+    .proto-eyebrow {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+    .proto-hero h2.hero {
+      font-size: clamp(1.35rem, 3.5vw, 1.85rem);
+      font-weight: 650;
+      line-height: 1.2;
+      margin: 0 0 12px;
+      border: none;
+      text-transform: none;
+      letter-spacing: -0.02em;
+      padding: 0;
+    }
+    .proto-hero .hero-sub { font-size: 15px; color: #3a3a3a; margin: 0 0 18px; max-width: 38em; }
+    .proto-cta-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 18px; }
+    .proto-btn {
+      font-family: var(--sans);
+      font-size: 13px;
+      padding: 10px 16px;
+      border-radius: 6px;
+      border: 2px solid var(--border);
+      cursor: default;
+    }
+    .proto-btn.primary { background: var(--ink); color: #fff; }
+    .proto-btn.ghost { background: transparent; color: var(--ink); }
+    .proto-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+    .proto-chip {
+      font-size: 12px;
+      padding: 6px 11px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: #1e3a5f;
+      border: 1px solid #93c5fd;
+      font-family: var(--mono);
+    }
+    .proto-split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      border-top: 1px solid #ccc;
+      min-height: 200px;
+    }
+    @media (max-width: 700px) { .proto-split { grid-template-columns: 1fr; } }
+    .proto-chat {
+      padding: 14px;
+      border-right: 1px solid #ccc;
+      background: #fff;
+    }
+    @media (max-width: 700px) { .proto-chat { border-right: none; border-bottom: 1px solid #ccc; } }
+    .proto-cli {
+      padding: 14px;
+      background: #0f0f0f;
+      color: #c8e6c9;
+      font-family: var(--mono);
+      font-size: 12px;
+      line-height: 1.55;
+    }
+    .proto-cli .prompt { color: #7cb97c; }
+    .proto-foot {
+      padding: 10px 16px;
+      font-size: 12px;
+      color: var(--muted);
+      border-top: 1px solid #ccc;
+      background: #f4f4f1;
+    }
+    .proto-note {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 8px;
+      padding: 0 4px;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>akashkedia.com</h1>
+    <p class="subtitle">Developer handoff: information architecture, prototype (HTML/CSS), exact copy, and interaction text. Prose follows <strong>Voice Canon</strong> in Notion (Personal Wiki). If this file disagrees with Notion, <strong>Notion wins</strong>.</p>
+
+    <section class="callout" aria-labelledby="dev-title">
+      <strong id="dev-title">Instructions for the developer</strong>
+      <ol>
+        <li><strong>Source of truth for layout and visuals:</strong> Akash will share <strong>Figma links</strong> to slides and frames for work history, organized <strong>by domain</strong> (e.g. AI/ML, Growth and internationalisation, Wealth and investments, Credit and lending, etc.) and <strong>by company</strong> (e.g. CheQ, Flipkart Pay, Trade Republic). Implement components to match Figma; use this HTML for <strong>copy strings</strong>, <strong>routing</strong>, and <strong>behaviour</strong> where Figma is silent.</li>
+        <li><strong>Positioning:</strong> Lead with <strong>AI</strong>, <strong>Growth</strong>, and <strong>Fintech</strong>. Payments is part of the story, not the headline pillar.</li>
+        <li><strong>Voice:</strong> All user-facing prose that sounds like Akash (hero, chat bot, essay blocks) must follow Voice Canon in Notion. Technical UI labels (buttons, aria) may stay sentence case for clarity unless Figma specifies otherwise.</li>
+        <li><strong>Single diagram:</strong> Section 1 below is the only site map diagram. Do not duplicate it elsewhere on the marketing site.</li>
+        <li><strong>Prototype:</strong> Section 2 is a <strong>static HTML/CSS prototype</strong> of the home experience (not production code). Build the real site to match Figma; keep behaviour: mode toggle (chat vs CLI), chips fire prefilled intents, CLI parses the command subset documented in section 6.</li>
+        <li><strong>Screenshot for decks:</strong> Use <code>exports/prototype-home.png</code> embedded in section 2.1 below, or regenerate it with <code>npm run screenshot</code> after you change the prototype HTML.</li>
+        <li><strong>No secrets in the status strip:</strong> Optional deploy metadata only; no API keys or hostnames beyond public marketing domain.</li>
+      </ol>
+    </section>
+
+    <h2>1 · Site map (single Mermaid diagram)</h2>
+    <p class="cap" style="font-size:13px;color:var(--muted);margin:0 0 0.5rem;">One diagram only. Use exports in this folder only if you need a static image asset; do not render the same graph twice on the shipped site.</p>
+    <div class="diagram-block">
+      <pre class="mermaid">flowchart TB
+  subgraph entry["Entry and orientation"]
+    HOME["Home"]
+    CHAT["Guided chat or CLI"]
+    HOME --> CHAT
+    HOME --> WORK
+    HOME --> WRITING
+    HOME --> BUILDS
+    HOME --> LIBRARY
+    HOME --> ABOUT
+    HOME --> CONTACT
+  end
+
+  subgraph proof["Proof of craft"]
+    WORK["Work and case studies"]
+    BUILDS["Builds and OSS"]
+    WORK --> LIBRARY
+    BUILDS --> WORK
+    BUILDS --> WRITING
+  end
+
+  subgraph pulse["Voice"]
+    WRITING["Writing hub"]
+    WRITING_FEAT["Featured"]
+    WRITING_X["Latest on X"]
+    WRITING --> WRITING_FEAT
+    WRITING --> WRITING_X
+  end
+
+  subgraph depth["Depth"]
+    LIBRARY["Library PDFs and decks"]
+    LIBRARY --> WORK
+    ABOUT["About"]
+    ABOUT --> WORK
+    ABOUT --> LIBRARY
+  end
+
+  CONTACT["Contact"]
+  CHAT -.-> WORK
+  CHAT -.-> LIBRARY
+  CHAT -.-> WRITING
+  CHAT -.-> BUILDS</pre>
+    </div>
+
+    <h2>2 · Prototype (home, default state)</h2>
+    <p class="proto-note">Below: non-production mock. Spacing, type, and colour are indicative. Final pixel specs come from Figma.</p>
+
+    <div id="site-prototype" role="img" aria-label="Static prototype of akashkedia.com home with chat and CLI areas">
+      <div class="proto-chrome">
+        <span class="d1" aria-hidden="true"></span><span class="d2" aria-hidden="true"></span><span class="d3" aria-hidden="true"></span>
+        www.akashkedia.com
+      </div>
+      <div class="proto-page">
+        <div class="proto-status">
+          <span>akashkedia.com · v0.1.0 · Europe/Berlin</span>
+          <span>build: ok</span>
+        </div>
+        <nav class="proto-nav" aria-label="Primary">
+          <a href="#">work</a>
+          <a href="#">writing</a>
+          <a href="#">builds</a>
+          <a href="#">library</a>
+          <a href="#">about</a>
+          <a href="#">contact</a>
+          <div class="proto-mode" role="group" aria-label="Interface mode">
+            <span class="on">chat</span>
+            <span class="off">cli</span>
+          </div>
+        </nav>
+        <div class="proto-hero">
+          <div class="proto-eyebrow">ai · growth · fintech · builder · europe</div>
+          <h2 class="hero">i build ai-native product and the growth systems around it, inside regulated fintech.</h2>
+          <p class="hero-sub">not slides: shipping, routing, evals, and the boring parts that keep a product true when scale hits. fintech is the arena; ai and distribution are the through line.</p>
+          <div class="proto-cta-row">
+            <span class="proto-btn primary">start with chat</span>
+            <span class="proto-btn ghost">use cli</span>
+            <span class="proto-btn ghost" style="border-style:dashed;">browse work</span>
+          </div>
+          <div class="proto-chips" aria-label="Suggested prompts">
+            <span class="proto-chip">what should i read in 10 minutes</span>
+            <span class="proto-chip">one ai product tradeoff with numbers</span>
+            <span class="proto-chip">growth lever you actually owned</span>
+            <span class="proto-chip">show something shipped not slid</span>
+          </div>
+        </div>
+        <div class="proto-split">
+          <div class="proto-chat">
+            <div class="label" style="font-size:11px;font-weight:700;color:#666;margin-bottom:8px;">CHAT (selected)</div>
+            <p style="margin:0 0 8px;font-size:13px;color:#444;"><strong style="font-weight:600;">system</strong> you are not talking to a generic assistant. you are routing through stuff i wrote about work i did. ask directly.</p>
+            <p style="margin:0;font-size:13px;"><span style="color:#666;">you</span> the 60-second version for a hiring manager</p>
+            <p style="margin:8px 0 0;font-size:13px;"><span style="color:#666;">akash</span> i build ai-native and growth-heavy product inside fintech. cheq, flipkart pay, trade republic: regulated money at scale. lately: operators not demos, evals, routing, cost discipline. <a href="#" style="color:var(--accent);">work</a> · <a href="#" style="color:var(--accent);">builds</a></p>
+          </div>
+          <div class="proto-cli" aria-label="CLI preview when selected">
+            <div class="label" style="color:#888;margin-bottom:8px;font-family:var(--sans);font-size:10px;">CLI (preview when toggled)</div>
+            <div><span class="prompt">akash@site:~$</span> help</div>
+            <div style="margin-top:10px;color:#9ca3af;">commands: help · open &lt;path&gt; · list &lt;target&gt; · find &quot;…&quot;</div>
+            <div style="margin-top:10px;"><span class="prompt">akash@site:~$</span> open work --filter=ai</div>
+            <div style="color:#86efac;">opening /work#ai</div>
+          </div>
+        </div>
+        <div class="proto-foot">footer: github · x · linkedin · <span style="opacity:0.7;">i build the product and the systems around it. this site is one of them.</span></div>
+      </div>
+    </div>
+
+    <h3 style="font-size:0.95rem; margin-top:1.75rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em;">2.1 Prototype screenshot (PNG)</h3>
+    <p style="font-size:13px; color:var(--muted); margin:0.35rem 0 0.6rem;">Raster export of the block above for decks, Notion, or Figma reference. Regenerate after HTML changes: from this folder run <code>npm install</code> then <code>npm run screenshot</code> (see <code>package.json</code>).</p>
+    <img src="exports/prototype-home.png" alt="Screenshot of the static home prototype: status bar, nav, mode toggle, hero for ai growth fintech, CTAs, chips, chat and CLI preview" style="max-width:100%; height:auto; border:2px solid var(--border); border-radius:10px; display:block;" />
+
+    <h2>3 · IA and navigation</h2>
+    <table class="spec">
+      <tr><th>Route</th><th>Purpose</th></tr>
+      <tr><td>/</td><td>Home: thesis, mode toggle, proof strip, entry to chat or CLI.</td></tr>
+      <tr><td>/work</td><td>Case studies and role outcomes. Filters by domain (from Figma and wiki taxonomy). Figma case slides per company land here.</td></tr>
+      <tr><td>/writing</td><td>Featured long-form plus latest from X.</td></tr>
+      <tr><td>/builds</td><td>Shipped systems (e.g. Lyra, pipelines) with links to public repos where applicable.</td></tr>
+      <tr><td>/library</td><td>Public PDFs and decks; HTML summaries; filters by domain and type.</td></tr>
+      <tr><td>/about</td><td>Principles and how Akash works with teams; not a duplicate of home.</td></tr>
+      <tr><td>/contact</td><td>Email, calendar link if any, low-friction contact.</td></tr>
+    </table>
+    <p><strong>Primary nav labels (exact):</strong> <code>work</code> <code>writing</code> <code>builds</code> <code>library</code> <code>about</code> <code>contact</code> (casing per Figma; default is all lowercase to match site voice).</p>
+    <p><strong>Mode toggle:</strong> Two options only: <code>chat</code> and <code>cli</code>. Same underlying intent map. Tooltip: <code>same brain. two interfaces.</code> Aria: <code>Switch between conversational and command-line navigation</code>.</p>
+
+    <h2>4 · Section-by-section copy (Voice Canon)</h2>
+    <p style="font-size:14px;color:var(--muted);">Essay-style strings use lowercase first person where noted. No em dash (U+2014). Avoid banned filler words from Voice Canon.</p>
+
+    <h3>4.1 Home (/)</h3>
+    <div class="copy-block"><div class="label">Eyebrow (mono)</div>ai · growth · fintech · builder · europe</div>
+    <div class="copy-block"><div class="label">Headline (voice: essay)</div>i build ai-native product and the growth systems around it, inside regulated fintech.</div>
+    <div class="copy-block"><div class="label">Subhead</div>shipping beats slideware: models, routing, evals, and the infra that keeps an ai product honest when real users and regulators show up. fintech is where i earned the scars; ai and growth are the lenses i use now.</div>
+    <div class="copy-block"><div class="label">Primary CTA</div>start with chat</div>
+    <div class="copy-block"><div class="label">Secondary CTA</div>use cli</div>
+    <div class="copy-block"><div class="label">Tertiary (text link)</div>or browse work without the tour</div>
+    <div class="copy-block"><div class="label">Proof strip (three cards, titles only; body one line each from Figma case slides)</div>CheQ · Flipkart Pay · Trade Republic (Akash supplies metrics per Figma)</div>
+    <div class="copy-block"><div class="label">Mode explainer heading</div>two ways in</div>
+    <div class="copy-block"><div class="label">Mode explainer body (voice: essay)</div>chat if you want the guided tour. cli if you want commands and flags. same routes. different posture.</div>
+    <div class="copy-block"><div class="label">Recent writing (section title)</div>recent writing</div>
+    <div class="copy-block"><div class="label">Builds teaser title / body / CTA</div>Lyra / personal ai on a small vps. routing, memory, evals, the parts people skip in demos. / see builds</div>
+    <div class="copy-block"><div class="label">Library teaser title / body / CTA</div>library / pdfs and decks when i can share them. summaries stay public. / browse library</div>
+    <div class="copy-block"><div class="label">Closing line (voice: essay)</div>if you want polish without substance, this is the wrong site.</div>
+    <div class="copy-block"><div class="label">CLI hint (mono, small)</div>try: open work --filter=ai</div>
+    <div class="copy-block"><div class="label">Empty state: writing feed unavailable</div>writing feed is down. open x: [URL from Akash]</div>
+
+    <h3>4.2 Work (/work)</h3>
+    <div class="copy-block"><div class="label">Title</div>work</div>
+    <div class="copy-block"><div class="label">Intro (voice: essay)</div>case studies are where i stop summarizing and show the mechanism. what was true, what we tried, what moved. company and domain deep dives live in figma: Akash will link frames per company and per domain.</div>
+    <div class="copy-block"><div class="label">Filter chips (example set, align to wiki Domains)</div>ai · growth and internationalisation · wealth and investments · credit and lending · consumer products · leadership (trim or expand per Figma)</div>
+    <div class="copy-block"><div class="label">Bottom CTA</div>want the raw artifact? → library</div>
+    <div class="copy-block"><div class="label">Case detail template (each case page)</div>H1 title · line: the short version: [one sentence claim] · sections: what was true · what we changed · what moved · what i would redo · downloads: pdf · [filename] if public · one blockquote for scanners</div>
+
+    <h3>4.3 Writing (/writing)</h3>
+    <div class="copy-block"><div class="label">Title</div>writing</div>
+    <div class="copy-block"><div class="label">Intro (voice: essay)</div>mostly x. sometimes a longer note when the idea does not fit a thread.</div>
+    <div class="copy-block"><div class="label">Tabs</div>featured · latest from x</div>
+    <div class="copy-block"><div class="label">Featured CTA</div>read thread or read post</div>
+    <div class="copy-block"><div class="label">Feed helper</div>live feed can break. featured posts are the backup.</div>
+
+    <h3>4.4 Builds (/builds)</h3>
+    <div class="copy-block"><div class="label">Title</div>builds</div>
+    <div class="copy-block"><div class="label">Intro (voice: essay)</div>code and automation i actually run. if it is listed here, it ships or shipped.</div>
+    <div class="copy-block"><div class="label">Lyra card</div>openclaw gateway, eval loop, telegram surface, cron hygiene.</div>
+    <div class="copy-block"><div class="label">Bookmarks pipeline card</div>bookmarks to notion. pay per call. daily.</div>
+
+    <h3>4.5 Library (/library)</h3>
+    <div class="copy-block"><div class="label">Title</div>library</div>
+    <div class="copy-block"><div class="label">Intro (voice: essay)</div>not everything belongs on the open web. what is here is either public by design or redacted. the summary still has to earn its keep.</div>
+    <div class="copy-block"><div class="label">Type filters</div>case study · framework · talk</div>
+    <div class="copy-block"><div class="label">Empty</div>nothing published here yet. ask in chat for what exists offsite.</div>
+
+    <h3>4.6 About (/about)</h3>
+    <div class="copy-block"><div class="label">Title</div>about</div>
+    <div class="copy-block"><div class="label">Lead (voice: essay)</div>i am a technical founder type who keeps ending up inside delivery. product calls, eng tradeoffs, the spreadsheet nobody wants to own. ai and growth are where i push now; fintech is the proof base.</div>
+    <div class="copy-block"><div class="label">Bullets</div>based in germany. thinking global markets. / cheq, flipkart pay, trade republic: regulated products at scale. / right now: ai products, distribution, job search, side systems that should not die when i context switch.</div>
+    <div class="copy-block"><div class="label">Principles (headlines)</div>ship the boring parts · name the failure · routing beats model</div>
+    <div class="copy-block"><div class="label">Photo caption (mono)</div>berlin · [year]</div>
+
+    <h3>4.7 Contact (/contact)</h3>
+    <div class="copy-block"><div class="label">Title</div>contact</div>
+    <div class="copy-block"><div class="label">Body (voice: essay)</div>email works. so does a scheduled call if the fit is obvious.</div>
+    <div class="copy-block"><div class="label">Email</div>ahkedia@gmail.com</div>
+    <div class="copy-block"><div class="label">Form labels</div>name · what you want · context link (optional) · submit: send</div>
+    <div class="copy-block"><div class="label">Form helper</div>no recruiting spam templates. i read everything that sounds human.</div>
+
+    <h2>5 · Chat: system strings, chips, and bot templates</h2>
+    <div class="copy-block"><div class="label">First system message</div>you are not talking to a generic assistant. you are routing through stuff i wrote about work i did. ask directly.</div>
+    <div class="copy-block"><div class="label">Input placeholder</div>ask about ai products, growth, fintech tradeoffs, evals, what broke…</div>
+    <div class="copy-block"><div class="label">Footer under input</div>answers link out to real pages. they are grounded, not invented.</div>
+    <h3>Chips (exact strings; each maps to a canned response + links)</h3>
+    <ul class="tight">
+      <li>the 60-second version for a hiring manager</li>
+      <li>what should i read first if i only have 10 minutes</li>
+      <li>one ai product tradeoff with a real constraint</li>
+      <li>what does running a personal ai actually cost</li>
+      <li>show me something you shipped, not slid</li>
+      <li>what would you say no to</li>
+    </ul>
+    <h3>Bot templates (user line then bot line)</h3>
+    <div class="copy-block"><div class="label">hiring manager</div><strong>user:</strong> the 60-second version for a hiring manager<br><strong>bot:</strong> i build ai-native and growth-heavy product inside fintech. cheq, flipkart pay, trade republic: regulated money and scale. lately: operators not demos, evals, routing, cost discipline.<br><strong>chips:</strong> read work · see builds</div>
+    <div class="copy-block"><div class="label">10 minutes</div><strong>user:</strong> what should i read first if i only have 10 minutes<br><strong>bot:</strong> pick one lane. ai and systems: start with Lyra under builds. growth or fintech proof: start with your strongest case page from work. opinion: open writing and pick a featured thread.<br><strong>chips:</strong> builds · work · writing</div>
+    <div class="copy-block"><div class="label">tradeoff</div><strong>user:</strong> one ai product tradeoff with a real constraint<br><strong>bot:</strong> example frame: we tightened routing before we bought more model capacity. the win was not smarter text. it was fewer stupid failures in production.<br><strong>chip:</strong> read full case</div>
+    <div class="copy-block"><div class="label">ai cost</div><strong>user:</strong> what does running a personal ai actually cost<br><strong>bot:</strong> published ballpark: tens of euros a month on a small vps if you are disciplined about routing and memory. the expensive part is not the model line item. it is the failure modes you pay for in time.<br><strong>chips:</strong> builds · library</div>
+    <div class="copy-block"><div class="label">shipped</div><strong>user:</strong> show me something you shipped, not slid<br><strong>bot:</strong> Lyra: live gateway, health checks, eval runner, telegram client. bookmarks pipeline: daily pull into notion. both are small. both are real.<br><strong>chips:</strong> builds · github</div>
+    <div class="copy-block"><div class="label">say no</div><strong>user:</strong> what would you say no to<br><strong>bot:</strong> a chatbot masquerading as strategy. a roadmap with no owner for the boring subsystem. "ai transformation" with no evaluation harness.<br><strong>chip:</strong> how i work → about</div>
+
+    <h2>6 · CLI: onboarding sequence and command copy</h2>
+    <h3>6.1 First-visit onboarding (about 12 seconds, respect prefers-reduced-motion)</h3>
+    <ol class="tight">
+      <li>Show prompt: <code>akash@site:~$</code> cursor.</li>
+      <li>Type <code>help</code> then execute; show output from 6.3.</li>
+      <li>Backspace to clear (skip if reduced motion).</li>
+      <li>Type <code>open work --filter=ai</code> then execute; show <code>opening /work#ai</code> plus link.</li>
+      <li>CTAs: <code>try the tour</code> (switch to chat + highlight chips) · <code>dismiss</code> · <code>never show again</code> (sets localStorage).</li>
+    </ol>
+    <div class="copy-block"><div class="label">CLI section title / sub</div>cli mode / typed commands. no small talk. if you already live in a terminal, this is the fast path.</div>
+    <h3>6.2 Errors</h3>
+    <ul class="tight">
+      <li>unknown command. type help.</li>
+      <li>no page at that path. try open work.</li>
+    </ul>
+    <h3>6.3 help output (exact)</h3>
+    <pre class="interaction">commands you will actually use:
+
+  help              show this
+  open &lt;path&gt;       jump to a page. examples: open work, open library
+  list &lt;thing&gt;      list items. examples: list builds, list pdfs
+  find "&lt;query&gt;"      search titles across the site
+
+flags:
+
+  --filter=&lt;tag&gt;    narrow work or library. examples: open work --filter=ai
+
+tip: same intents work in chat. cli is just explicit routing.</pre>
+    <h3>6.4 Command dictionary (exact)</h3>
+    <pre class="interaction">open &lt;path&gt; [--filter=&lt;tag&gt;]
+  paths: /, /work, /writing, /builds, /library, /about, /contact
+  example: open work --filter=ai
+
+list &lt;target&gt; [--domain=&lt;tag&gt;] [--type=&lt;type&gt;]
+  targets: builds | pdfs | threads
+  example: list pdfs --domain=ai
+
+find "&lt;query&gt;"
+  example: find "routing"
+
+clear
+  clears transcript
+
+help
+  shows commands</pre>
+
+    <h2>7 · Figma and delivery checklist</h2>
+    <ul class="tight">
+      <li>Akash supplies Figma URLs for case studies, grouped by domain and by company. Wire each card on /work to the right frame.</li>
+      <li>Components to spec in Figma if not already: shell, mode_toggle, chip, chat bubbles, cli lines, cards, link_chip.</li>
+      <li>Prototype interactions: CLI onboarding; toggle chat or cli; chip to response; response link to route.</li>
+      <li>Regenerate static Mermaid asset only when IA changes: see README in this folder for mermaid-cli.</li>
+    </ul>
+  </main>
+</body>
+</html>
