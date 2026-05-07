@@ -1,24 +1,33 @@
 {
-  "name": "new-folder",
+  "name": "akashgpt-server",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "RAG-powered chat backend for Ask Akash",
+  "main": "dist/server.js",
   "scripts": {
-    "dev": "nodemon server.mjs",
-    "start": "node server.mjs",
+    "build": "tsc",
+    "dev": "tsx watch src/server.ts",
+    "start": "node dist/server.js",
+    "sync": "tsx src/sync-notion.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "dependencies": {
+    "@notionhq/client": "^2.3.0",
+    "@supabase/supabase-js": "^2.49.0",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "openai": "^6.35.0"
   },
   "devDependencies": {
-    "nodemon": "^3.1.14"
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.0.0",
+    "nodemon": "^3.1.14",
+    "tsx": "^4.19.0",
+    "typescript": "^5.7.0"
   }
 }
