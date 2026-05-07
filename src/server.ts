@@ -23,7 +23,27 @@ const app = express();
 
 app.use(
   cors({
-    origin: '*', // Tighten in production to config.allowedOrigins
+    origin: (origin, callback) => {
+      // Allow requests with no origin (mobile apps, curl, Postman)
+      if (!origin) return callback(null, true);
+
+      const allowed = config.allowedOrigins.some((pattern) => {
+        if (typeof pattern === 'string') return pattern === origin;
+        if (pattern instanceof RegExp) return pattern.test(origin);
+        return false;
+      });
+
+      if (allowed) {
+        callback(null, true);
+      } else {
+        // In development, allow all origins
+        if (process.env.NODE_ENV !== 'production') {
+          callback(null, true);
+        } else {
+          callback(new Error(`CORS: origin ${origin} not allowed`));
+        }
+      }
+    },
     methods: ['GET', 'POST', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
   })
@@ -40,6 +60,11 @@ interface ChatRequest {
   messages: ChatMessage[];
   sessionId?: string;
 }
+
+type LlmMessage = {
+  role: 'system' | 'user' | 'assistant';
+  content: string;
+};
 
 // ── POST /api/chat — RAG + SSE streaming ─────────────────────────
 app.post('/api/chat', async (req, res) => {
@@ -60,7 +85,11 @@ app.post('/api/chat', async (req, res) => {
     return;
   }
 
-  const query = lastUserMessage.content;
+  const query = lastUserMessage.content.trim();
+  if (!query) {
+    res.status(400).json({ error: 'User message cannot be empty.' });
+    return;
+  }
 
   // Set SSE headers
   res.setHeader('Content-Type', 'text/event-stream');
@@ -99,26 +128,23 @@ app.post('/api/chat', async (req, res) => {
     // ── 3. Build context + messages for MiniMax ──────────────
     const contextBlock = buildContextBlock(chunks);
 
-    const llmMessages = [
-      { role: 'system' as const, content: SYSTEM_PROMPT },
-      {
-        role: 'user' as const,
-        content: `${contextBlock}\n\n---\n\nUser question: ${query}`,
-      },
-    ];
+    const llmMessages: LlmMessage[] = [{ role: 'system', content: SYSTEM_PROMPT }];
 
-    // Include conversation history (last 4 exchanges max)
-    const historyMessages = messages.slice(-8); // last 4 pairs
+    // Include conversation history (last 4 exchanges max), excluding latest query.
+    const historyMessages = messages.slice(-8);
     for (const msg of historyMessages) {
       if (msg.role === 'user' && msg.content !== query) {
-        llmMessages.push({ role: 'user' as const, content: msg.content });
+        llmMessages.push({ role: 'user', content: msg.content });
       } else if (msg.role === 'assistant') {
-        llmMessages.push({ role: 'assistant' as const, content: msg.content });
+        llmMessages.push({ role: 'assistant', content: msg.content });
       }
     }
 
-    // Put the current question last
-    // (already included in the context block above)
+    // Put the current question last with explicit retrieved context.
+    llmMessages.push({
+      role: 'user',
+      content: `${contextBlock}\n\n---\n\nUser question: ${query}`,
+    });
 
     // ── 4. Stream from MiniMax M2.7 ──────────────────────────
     const miniMaxResponse = await fetch(
@@ -189,7 +215,7 @@ app.post('/api/chat', async (req, res) => {
             );
           }
         } catch {
-          // Skip malformed JSON lines
+          // Skip malformed JSON lines (e.g. partial data)
         }
       }
     }
@@ -206,7 +232,7 @@ app.post('/api/chat', async (req, res) => {
     res.end();
 
     // ── 7. Log conversation to Supabase (fire-and-forget) ────
-    await logConversation({
+    logConversation({
       sessionId: sessionId ?? 'anonymous',
       question: query,
       answer: fullAnswer,
@@ -219,14 +245,16 @@ app.post('/api/chat', async (req, res) => {
   } catch (err) {
     console.error('Chat endpoint error:', err);
 
-    // Only try to write error if headers haven't been sent as body yet
-    try {
-      res.write(
-        `data: ${JSON.stringify({ type: 'error', content: 'Something went wrong. Please try again.' })}\n\n`
-      );
-      res.end();
-    } catch {
-      // Response already ended
+    // Only try to write error if the response is still writable
+    if (!res.writableEnded) {
+      try {
+        res.write(
+          `data: ${JSON.stringify({ type: 'error', content: 'Something went wrong. Please try again.' })}\n\n`
+        );
+        res.end();
+      } catch {
+        // Response already ended
+      }
     }
   }
 });

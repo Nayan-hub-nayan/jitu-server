@@ -7,6 +7,14 @@ function requireEnv(name: string): string {
   return val;
 }
 
+/**
+ * Optional env var — returns the value or undefined.
+ * Used for keys that are only needed by specific commands (e.g. Notion for sync).
+ */
+function optionalEnv(name: string): string | undefined {
+  return process.env[name] || undefined;
+}
+
 export const config = {
   // MiniMax (OpenAI-compatible)
   minimax: {
@@ -18,8 +26,8 @@ export const config = {
   // Gemini embeddings
   gemini: {
     apiKey: requireEnv('GEMINI_API_KEY'),
-    embeddingModel: 'text-embedding-004',
-    embeddingDimension: 768,
+    embeddingModel: 'gemini-embedding-001',
+    embeddingDimension: 3072,
   },
 
   // Supabase
@@ -29,9 +37,9 @@ export const config = {
     anonKey: process.env.SUPABASE_ANON_KEY ?? '',
   },
 
-  // Notion
+  // Notion — optional at server startup; required only when running `npm run sync`
   notion: {
-    apiKey: requireEnv('NOTION_API_KEY'),
+    apiKey: optionalEnv('NOTION_API_KEY'),
   },
 
   // Server
@@ -40,8 +48,9 @@ export const config = {
   // CORS
   allowedOrigins: [
     'https://askakash.com',
-    'https://*.framer.app',
+    /^https:\/\/.*\.framer\.app$/,   // Framer preview domains (regex for wildcard)
     'http://localhost:3000',
     'http://localhost:5173',
+    'http://localhost:3001',
   ],
 } as const;

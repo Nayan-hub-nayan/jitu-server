@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS chunks (
   heading TEXT NOT NULL,
   content TEXT NOT NULL,
   surface_type TEXT NOT NULL,         -- bio, career, project, faq, domain, blog, anti-corpus
-  embedding vector(768),              -- Gemini text-embedding-004 dimension
+  embedding vector(3072),             -- Gemini gemini-embedding-001 dimension
   last_synced_at TIMESTAMPTZ DEFAULT now(),
   notion_last_edited TEXT,
 
@@ -59,7 +59,7 @@ CREATE INDEX IF NOT EXISTS conversations_score_idx ON conversations (top_similar
 -- 4. Hybrid search function (vector + BM25 combined)
 -- ─────────────────────────────────────────────────────────────────
 CREATE OR REPLACE FUNCTION hybrid_search(
-  query_embedding vector(768),
+  query_embedding vector(3072),
   query_text text,
   match_count int DEFAULT 10,
   vector_weight float DEFAULT 0.7,

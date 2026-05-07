@@ -5,8 +5,21 @@ import type {
   RichTextItemResponse,
 } from '@notionhq/client/build/src/api-endpoints.js';
 
-// ── Notion client ────────────────────────────────────────────────
-export const notion = new Client({ auth: config.notion.apiKey });
+// ── Notion client (lazy-init — only created when sync script runs) ──
+let _notion: Client | null = null;
+
+export function getNotionClient(): Client {
+  if (!_notion) {
+    if (!config.notion.apiKey) {
+      throw new Error(
+        'NOTION_API_KEY is not set. Add it to your .env file.\n' +
+        'Get it from: https://www.notion.so/my-integrations'
+      );
+    }
+    _notion = new Client({ auth: config.notion.apiKey });
+  }
+  return _notion;
+}
 
 // ── Page definitions from CLAUDE.md ─────────────────────────────
 
@@ -50,6 +63,7 @@ export const BLOG_DATABASE_ID = '33d78008-9100-8183-850d-e7677ac46b63';
 export async function fetchAllBlocks(
   pageId: string
 ): Promise<BlockObjectResponse[]> {
+  const notion = getNotionClient();
   const blocks: BlockObjectResponse[] = [];
   let cursor: string | undefined = undefined;
 
@@ -124,6 +138,7 @@ export function blockToText(block: BlockObjectResponse): string {
 
 // ── Fetch blog pages from the wiki database ─────────────────────
 export async function fetchBlogPages(): Promise<NotionPage[]> {
+  const notion = getNotionClient();
   const blogPages: NotionPage[] = [];
 
   try {

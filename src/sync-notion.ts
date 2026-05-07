@@ -9,7 +9,7 @@
 
 import 'dotenv/config';
 import {
-  notion,
+  getNotionClient,
   WIKI_PAGES,
   CAREER_PAGES,
   fetchAllBlocks,
@@ -30,6 +30,7 @@ interface SyncStats {
 
 // ── Get last edited time for a page ─────────────────────────────
 async function getPageLastEdited(pageId: string): Promise<string> {
+  const notion = getNotionClient();
   try {
     const page = await notion.pages.retrieve({ page_id: pageId });
     if ('last_edited_time' in page) {
@@ -39,6 +40,41 @@ async function getPageLastEdited(pageId: string): Promise<string> {
     // Ignore errors, return empty string
   }
   return '';
+}
+
+// ── Delete stale chunks for a page ──────────────────────────────
+async function deleteStaleChunks(
+  notionPageId: string,
+  currentHeadings: string[]
+): Promise<void> {
+  // Fetch all existing chunks for this page
+  const { data: existingChunks, error: fetchError } = await supabase
+    .from('chunks')
+    .select('id, heading')
+    .eq('notion_page_id', notionPageId);
+
+  if (fetchError || !existingChunks) {
+    console.warn(`   ⚠️  Could not fetch existing chunks for cleanup`);
+    return;
+  }
+
+  // Find chunks whose headings are no longer in the current set
+  const staleIds = existingChunks
+    .filter((c) => !currentHeadings.includes(c.heading))
+    .map((c) => c.id);
+
+  if (staleIds.length === 0) return;
+
+  const { error: deleteError } = await supabase
+    .from('chunks')
+    .delete()
+    .in('id', staleIds);
+
+  if (deleteError) {
+    console.warn(`   ⚠️  Could not delete ${staleIds.length} stale chunks:`, deleteError.message);
+  } else {
+    console.log(`   🗑️  Removed ${staleIds.length} stale chunk(s)`);
+  }
 }
 
 // ── Process a single page ───────────────────────────────────────
@@ -121,15 +157,7 @@ async function processPage(
 
     // 6. Remove stale chunks (headings that no longer exist in the page)
     const currentHeadings = chunks.map((c) => c.heading);
-    const { error: deleteError } = await supabase
-      .from('chunks')
-      .delete()
-      .eq('notion_page_id', page.notionId)
-      .not('heading', 'in', `(${currentHeadings.map((h) => `"${h.replace(/"/g, '\\"')}"`).join(',')})`);
-
-    if (deleteError) {
-      console.warn(`   ⚠️  Could not clean stale chunks:`, deleteError.message);
-    }
+    await deleteStaleChunks(page.notionId, currentHeadings);
 
     stats.pagesProcessed++;
   } catch (err) {
@@ -143,6 +171,20 @@ async function processPage(
 async function syncAll(): Promise<void> {
   console.log('🔄 Starting Notion → Supabase sync...');
   console.log(`   Timestamp: ${new Date().toISOString()}\n`);
+
+  // Fail fast if NOTION_API_KEY is missing
+  const notion = getNotionClient();
+
+  // Verify Notion credentials
+  try {
+    await notion.users.me({});
+    console.log('✅ Notion authentication successful');
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    throw new Error(
+      `Notion authentication failed. Check NOTION_API_KEY and integration access.\n${message}`
+    );
+  }
 
   const stats: SyncStats = {
     pagesProcessed: 0,

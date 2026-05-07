@@ -23,7 +23,7 @@ export async function retrieve(query: string): Promise<{
 
   // 2. Hybrid search in Supabase
   const { data, error } = await supabase.rpc('hybrid_search', {
-    query_embedding: JSON.stringify(queryEmbedding),
+    query_embedding: queryEmbedding,
     query_text: query,
     match_count: 10,
     vector_weight: 0.7,
