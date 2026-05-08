@@ -48,6 +48,7 @@ export const config = {
   // CORS
   allowedOrigins: [
     'https://askakash.com',
+    'https://predictable-feel-940249.framer.app',
     /^https:\/\/.*\.framer\.app$/,   // Framer preview domains (regex for wildcard)
     'http://localhost:3000',
     'http://localhost:5173',
