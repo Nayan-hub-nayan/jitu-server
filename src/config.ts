@@ -20,7 +20,7 @@ export const config = {
   minimax: {
     baseUrl: requireEnv('OPENAI_BASE_URL'),
     apiKey: requireEnv('OPENAI_API_KEY'),
-    model: 'MiniMax-M1-80k',
+    model: 'MiniMax-M2.7',
   },
 
   // Gemini embeddings
