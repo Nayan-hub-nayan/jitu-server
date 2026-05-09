@@ -12,6 +12,8 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import crypto from 'crypto';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { config } from './config.js';
 import { retrieve } from './lib/retrieval.js';
 import { supabase } from './lib/supabase.js';
@@ -58,6 +60,10 @@ app.use(
   })
 );
 app.use(express.json());
+
+// ── Serve public/ static assets (admin.css, admin.js) ───────────
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+app.use(express.static(path.join(__dirname, '..', 'public')));
 
 // ── Types ────────────────────────────────────────────────────────
 interface ChatMessage {
@@ -360,15 +366,9 @@ app.get('/api/admin', async (_req, res) => {
   }
 });
 
-// ── GET /admin — Admin dashboard HTML page ───────────────────────
-// app.get('/admin', requireAdminAuth, (_req, res) => {
-//   res.setHeader('Content-Type', 'text/html');
-//   res.send(adminPageHtml());
-// });
-
-app.get('/admin', (_req, res) => {
-  res.setHeader('Content-Type', 'text/html');
-  res.send(adminPageHtml());
+// ── GET /admin — Admin dashboard HTML page (served from public/) ─
+app.get('/admin', requireAdminAuth, (_req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'public', 'admin.html'));
 });
 
 // ── Conversation logging ─────────────────────────────────────────
@@ -423,203 +423,201 @@ if (process.env.NODE_ENV !== 'production') {
 
 export default app;
 
-// ═══════════════════════════════════════════════════════════════════
-// Admin Dashboard HTML (self-contained, no external build step)
-// ═══════════════════════════════════════════════════════════════════
-function adminPageHtml(): string {
-  return `<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ask Akash — Admin</title>
-  <style>
-    :root {
-      --bg: #0a0a0f;
-      --surface: #13131a;
-      --surface-2: #1c1c26;
-      --border: #2a2a3a;
-      --text: #e4e4ef;
-      --text-dim: #8888a0;
-      --accent: #6c63ff;
-      --accent-glow: rgba(108,99,255,0.15);
-      --danger: #ff6b6b;
-      --warning: #ffb347;
-      --success: #63e6be;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      background: var(--bg); color: var(--text);
-      line-height: 1.6; padding: 24px;
-      max-width: 1200px; margin: 0 auto;
-    }
-    h1 { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
-    .subtitle { color: var(--text-dim); font-size: 14px; margin-bottom: 32px; }
+// (Admin HTML, CSS and JS are now served from public/admin.html, public/admin.css, public/admin.js)
 
-    /* Stats grid */
-    .stats-grid {
-      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 16px; margin-bottom: 40px;
-    }
-    .stat-card {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 12px; padding: 20px;
-    }
-    .stat-label { font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-dim); }
-    .stat-value { font-size: 32px; font-weight: 700; margin-top: 4px; }
-    .stat-value.danger { color: var(--danger); }
-    .stat-value.warning { color: var(--warning); }
-    .stat-value.success { color: var(--success); }
+//   return `<!DOCTYPE html>
+// <html lang="en">
+// <head>
+//   <meta charset="UTF-8">
+//   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+//   <title>Ask Akash — Admin</title>
+//   <style>
+//     :root {
+//       --bg: #0a0a0f;
+//       --surface: #13131a;
+//       --surface-2: #1c1c26;
+//       --border: #2a2a3a;
+//       --text: #e4e4ef;
+//       --text-dim: #8888a0;
+//       --accent: #6c63ff;
+//       --accent-glow: rgba(108,99,255,0.15);
+//       --danger: #ff6b6b;
+//       --warning: #ffb347;
+//       --success: #63e6be;
+//     }
+//     * { box-sizing: border-box; margin: 0; padding: 0; }
+//     body {
+//       font-family: 'Inter', system-ui, -apple-system, sans-serif;
+//       background: var(--bg); color: var(--text);
+//       line-height: 1.6; padding: 24px;
+//       max-width: 1200px; margin: 0 auto;
+//     }
+//     h1 { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
+//     .subtitle { color: var(--text-dim); font-size: 14px; margin-bottom: 32px; }
 
-    /* Tabs */
-    .tabs { display: flex; gap: 4px; margin-bottom: 24px; }
-    .tab {
-      padding: 8px 20px; border-radius: 8px; border: 1px solid var(--border);
-      background: transparent; color: var(--text-dim); cursor: pointer;
-      font-size: 14px; transition: all 0.2s;
-    }
-    .tab:hover { background: var(--surface); color: var(--text); }
-    .tab.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+//     /* Stats grid */
+//     .stats-grid {
+//       display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+//       gap: 16px; margin-bottom: 40px;
+//     }
+//     .stat-card {
+//       background: var(--surface); border: 1px solid var(--border);
+//       border-radius: 12px; padding: 20px;
+//     }
+//     .stat-label { font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-dim); }
+//     .stat-value { font-size: 32px; font-weight: 700; margin-top: 4px; }
+//     .stat-value.danger { color: var(--danger); }
+//     .stat-value.warning { color: var(--warning); }
+//     .stat-value.success { color: var(--success); }
 
-    /* Table */
-    .table-wrap { overflow-x: auto; }
-    table { width: 100%; border-collapse: collapse; font-size: 14px; }
-    th {
-      text-align: left; padding: 12px 16px; border-bottom: 2px solid var(--border);
-      color: var(--text-dim); font-weight: 600; font-size: 12px;
-      text-transform: uppercase; letter-spacing: 0.04em;
-    }
-    td {
-      padding: 12px 16px; border-bottom: 1px solid var(--border);
-      vertical-align: top; max-width: 400px;
-    }
-    tr:hover { background: var(--surface); }
-    .truncate { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 300px; display: block; }
-    .badge {
-      display: inline-block; padding: 2px 8px; border-radius: 4px;
-      font-size: 11px; font-weight: 600;
-    }
-    .badge-fallback { background: rgba(255,107,107,0.15); color: var(--danger); }
-    .badge-low { background: rgba(255,179,71,0.15); color: var(--warning); }
-    .badge-ok { background: rgba(99,230,190,0.15); color: var(--success); }
-    .score { font-family: 'SF Mono', monospace; font-size: 13px; }
+//     /* Tabs */
+//     .tabs { display: flex; gap: 4px; margin-bottom: 24px; }
+//     .tab {
+//       padding: 8px 20px; border-radius: 8px; border: 1px solid var(--border);
+//       background: transparent; color: var(--text-dim); cursor: pointer;
+//       font-size: 14px; transition: all 0.2s;
+//     }
+//     .tab:hover { background: var(--surface); color: var(--text); }
+//     .tab.active { background: var(--accent); color: #fff; border-color: var(--accent); }
 
-    .panel { display: none; }
-    .panel.active { display: block; }
-    .loading { text-align: center; padding: 60px; color: var(--text-dim); }
-    .refresh-btn {
-      padding: 8px 16px; border-radius: 8px; border: 1px solid var(--border);
-      background: var(--surface); color: var(--text); cursor: pointer;
-      font-size: 13px; float: right; transition: all 0.2s;
-    }
-    .refresh-btn:hover { border-color: var(--accent); background: var(--accent-glow); }
-    .time-ago { color: var(--text-dim); font-size: 12px; }
-  </style>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-</head>
-<body>
-  <h1>🔍 Ask Akash — Admin Dashboard</h1>
-  <p class="subtitle">Review low-confidence answers, monitor top queries, and track usage.</p>
+//     /* Table */
+//     .table-wrap { overflow-x: auto; }
+//     table { width: 100%; border-collapse: collapse; font-size: 14px; }
+//     th {
+//       text-align: left; padding: 12px 16px; border-bottom: 2px solid var(--border);
+//       color: var(--text-dim); font-weight: 600; font-size: 12px;
+//       text-transform: uppercase; letter-spacing: 0.04em;
+//     }
+//     td {
+//       padding: 12px 16px; border-bottom: 1px solid var(--border);
+//       vertical-align: top; max-width: 400px;
+//     }
+//     tr:hover { background: var(--surface); }
+//     .truncate { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 300px; display: block; }
+//     .badge {
+//       display: inline-block; padding: 2px 8px; border-radius: 4px;
+//       font-size: 11px; font-weight: 600;
+//     }
+//     .badge-fallback { background: rgba(255,107,107,0.15); color: var(--danger); }
+//     .badge-low { background: rgba(255,179,71,0.15); color: var(--warning); }
+//     .badge-ok { background: rgba(99,230,190,0.15); color: var(--success); }
+//     .score { font-family: 'SF Mono', monospace; font-size: 13px; }
 
-  <div id="stats" class="stats-grid"><div class="loading">Loading stats…</div></div>
+//     .panel { display: none; }
+//     .panel.active { display: block; }
+//     .loading { text-align: center; padding: 60px; color: var(--text-dim); }
+//     .refresh-btn {
+//       padding: 8px 16px; border-radius: 8px; border: 1px solid var(--border);
+//       background: var(--surface); color: var(--text); cursor: pointer;
+//       font-size: 13px; float: right; transition: all 0.2s;
+//     }
+//     .refresh-btn:hover { border-color: var(--accent); background: var(--accent-glow); }
+//     .time-ago { color: var(--text-dim); font-size: 12px; }
+//   </style>
+//   <link rel="preconnect" href="https://fonts.googleapis.com">
+//   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+// </head>
+// <body>
+//   <h1>🔍 Ask Akash — Admin Dashboard</h1>
+//   <p class="subtitle">Review low-confidence answers, monitor top queries, and track usage.</p>
 
-  <button class="refresh-btn" onclick="loadData()">↻ Refresh</button>
+//   <div id="stats" class="stats-grid"><div class="loading">Loading stats…</div></div>
 
-  <div class="tabs">
-    <button class="tab active" onclick="switchTab('low-conf', this)">Low Confidence</button>
-    <button class="tab" onclick="switchTab('top-queries', this)">Top Queries</button>
-  </div>
+//   <button class="refresh-btn" onclick="loadData()">↻ Refresh</button>
 
-  <div id="low-conf" class="panel active"><div class="loading">Loading…</div></div>
-  <div id="top-queries" class="panel"><div class="loading">Loading…</div></div>
+//   <div class="tabs">
+//     <button class="tab active" onclick="switchTab('low-conf', this)">Low Confidence</button>
+//     <button class="tab" onclick="switchTab('top-queries', this)">Top Queries</button>
+//   </div>
 
-  <script>
-    function switchTab(id, btn) {
-      document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-      document.getElementById(id).classList.add('active');
-      btn.classList.add('active');
-    }
+//   <div id="low-conf" class="panel active"><div class="loading">Loading…</div></div>
+//   <div id="top-queries" class="panel"><div class="loading">Loading…</div></div>
 
-    function timeAgo(dateStr) {
-      const diff = Date.now() - new Date(dateStr).getTime();
-      const mins = Math.floor(diff / 60000);
-      if (mins < 60) return mins + 'm ago';
-      const hrs = Math.floor(mins / 60);
-      if (hrs < 24) return hrs + 'h ago';
-      return Math.floor(hrs / 24) + 'd ago';
-    }
+//   <script>
+//     function switchTab(id, btn) {
+//       document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+//       document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+//       document.getElementById(id).classList.add('active');
+//       btn.classList.add('active');
+//     }
 
-    function scoreBadge(score, wasFallback) {
-      if (wasFallback) return '<span class="badge badge-fallback">FALLBACK</span>';
-      if (score < 0.35) return '<span class="badge badge-fallback">' + score.toFixed(3) + '</span>';
-      if (score < 0.45) return '<span class="badge badge-low">' + score.toFixed(3) + '</span>';
-      return '<span class="badge badge-ok">' + score.toFixed(3) + '</span>';
-    }
+//     function timeAgo(dateStr) {
+//       const diff = Date.now() - new Date(dateStr).getTime();
+//       const mins = Math.floor(diff / 60000);
+//       if (mins < 60) return mins + 'm ago';
+//       const hrs = Math.floor(mins / 60);
+//       if (hrs < 24) return hrs + 'h ago';
+//       return Math.floor(hrs / 24) + 'd ago';
+//     }
 
-    async function loadData() {
-      const btn = document.querySelector('.refresh-btn');
-      if (btn) {
-        btn.disabled = true;
-        btn.textContent = '⏳ Loading...';
-      }
+//     function scoreBadge(score, wasFallback) {
+//       if (wasFallback) return '<span class="badge badge-fallback">FALLBACK</span>';
+//       if (score < 0.35) return '<span class="badge badge-fallback">' + score.toFixed(3) + '</span>';
+//       if (score < 0.45) return '<span class="badge badge-low">' + score.toFixed(3) + '</span>';
+//       return '<span class="badge badge-ok">' + score.toFixed(3) + '</span>';
+//     }
 
-      // Reset panels to loading state
-      document.getElementById('low-conf').innerHTML = '<div class="loading">Loading...</div>';
-      document.getElementById('top-queries').innerHTML = '<div class="loading">Loading...</div>';
+//     async function loadData() {
+//       const btn = document.querySelector('.refresh-btn');
+//       if (btn) {
+//         btn.disabled = true;
+//         btn.textContent = '⏳ Loading...';
+//       }
 
-      try {
-        const r = await fetch('/api/admin');
-        const data = await r.json();
+//       // Reset panels to loading state
+//       document.getElementById('low-conf').innerHTML = '<div class="loading">Loading...</div>';
+//       document.getElementById('top-queries').innerHTML = '<div class="loading">Loading...</div>';
 
-        // Stats
-        const s = data.stats;
-        document.getElementById('stats').innerHTML =
-          '<div class="stat-card"><div class="stat-label">Total Conversations</div><div class="stat-value">' + s.totalConversations + '</div></div>' +
-          '<div class="stat-card"><div class="stat-label">Fallback Rate</div><div class="stat-value ' + (s.fallbackRate > 30 ? 'danger' : s.fallbackRate > 15 ? 'warning' : 'success') + '">' + s.fallbackRate.toFixed(1) + '%</div></div>' +
-          '<div class="stat-card"><div class="stat-label">Avg Similarity</div><div class="stat-value score">' + s.avgSimilarityScore.toFixed(3) + '</div></div>' +
-          '<div class="stat-card"><div class="stat-label">Unanswered</div><div class="stat-value danger">' + s.fallbackCount + '</div></div>';
+//       try {
+//         const r = await fetch('/api/admin');
+//         const data = await r.json();
 
-        // Low confidence table
-        let lcHtml = '<div class="table-wrap"><table><thead><tr><th>Time</th><th>Question</th><th>Score</th><th>Answer (preview)</th></tr></thead><tbody>';
-        for (const row of data.lowConfidence) {
-          lcHtml += '<tr><td class="time-ago">' + timeAgo(row.created_at) + '</td>' +
-            '<td><span class="truncate" title="' + row.question.replace(/"/g,'&quot;') + '">' + row.question + '</span></td>' +
-            '<td>' + scoreBadge(row.top_similarity_score || 0, row.was_fallback) + '</td>' +
-            '<td><span class="truncate">' + (row.answer || '').slice(0, 120) + '</span></td></tr>';
-        }
-        lcHtml += '</tbody></table></div>';
-        if (!data.lowConfidence.length) lcHtml = '<p style="color:var(--text-dim);padding:40px;text-align:center">No low-confidence answers yet 🎉</p>';
-        document.getElementById('low-conf').innerHTML = lcHtml;
+//         // Stats
+//         const s = data.stats;
+//         document.getElementById('stats').innerHTML =
+//           '<div class="stat-card"><div class="stat-label">Total Conversations</div><div class="stat-value">' + s.totalConversations + '</div></div>' +
+//           '<div class="stat-card"><div class="stat-label">Fallback Rate</div><div class="stat-value ' + (s.fallbackRate > 30 ? 'danger' : s.fallbackRate > 15 ? 'warning' : 'success') + '">' + s.fallbackRate.toFixed(1) + '%</div></div>' +
+//           '<div class="stat-card"><div class="stat-label">Avg Similarity</div><div class="stat-value score">' + s.avgSimilarityScore.toFixed(3) + '</div></div>' +
+//           '<div class="stat-card"><div class="stat-label">Unanswered</div><div class="stat-value danger">' + s.fallbackCount + '</div></div>';
 
-        // Top queries table
-        let tqHtml = '<div class="table-wrap"><table><thead><tr><th>Question</th><th>Count</th><th>Avg Score</th><th>Last Asked</th></tr></thead><tbody>';
-        for (const row of data.topQueries) {
-          tqHtml += '<tr><td>' + row.question + '</td>' +
-            '<td><strong>' + row.count + '</strong></td>' +
-            '<td class="score">' + row.avg_score.toFixed(3) + '</td>' +
-            '<td class="time-ago">' + timeAgo(row.latest_at) + '</td></tr>';
-        }
-        tqHtml += '</tbody></table></div>';
-        if (!data.topQueries.length) tqHtml = '<p style="color:var(--text-dim);padding:40px;text-align:center">No queries logged yet</p>';
-        document.getElementById('top-queries').innerHTML = tqHtml;
+//         // Low confidence table
+//         let lcHtml = '<div class="table-wrap"><table><thead><tr><th>Time</th><th>Question</th><th>Score</th><th>Answer (preview)</th></tr></thead><tbody>';
+//         for (const row of data.lowConfidence) {
+//           lcHtml += '<tr><td class="time-ago">' + timeAgo(row.created_at) + '</td>' +
+//             '<td><span class="truncate" title="' + row.question.replace(/"/g,'&quot;') + '">' + row.question + '</span></td>' +
+//             '<td>' + scoreBadge(row.top_similarity_score || 0, row.was_fallback) + '</td>' +
+//             '<td><span class="truncate">' + (row.answer || '').slice(0, 120) + '</span></td></tr>';
+//         }
+//         lcHtml += '</tbody></table></div>';
+//         if (!data.lowConfidence.length) lcHtml = '<p style="color:var(--text-dim);padding:40px;text-align:center">No low-confidence answers yet 🎉</p>';
+//         document.getElementById('low-conf').innerHTML = lcHtml;
 
-      } catch (err) {
-        console.error('Failed to load admin data:', err);
-        document.getElementById('stats').innerHTML = '<p style="color:var(--danger)">Failed to load data. Check console.</p>';
-      } finally {
-        const btn = document.querySelector('.refresh-btn');
-        if (btn) {
-          btn.disabled = false;
-          btn.textContent = '↻ Refresh';
-        }
-      }
-    }
+//         // Top queries table
+//         let tqHtml = '<div class="table-wrap"><table><thead><tr><th>Question</th><th>Count</th><th>Avg Score</th><th>Last Asked</th></tr></thead><tbody>';
+//         for (const row of data.topQueries) {
+//           tqHtml += '<tr><td>' + row.question + '</td>' +
+//             '<td><strong>' + row.count + '</strong></td>' +
+//             '<td class="score">' + row.avg_score.toFixed(3) + '</td>' +
+//             '<td class="time-ago">' + timeAgo(row.latest_at) + '</td></tr>';
+//         }
+//         tqHtml += '</tbody></table></div>';
+//         if (!data.topQueries.length) tqHtml = '<p style="color:var(--text-dim);padding:40px;text-align:center">No queries logged yet</p>';
+//         document.getElementById('top-queries').innerHTML = tqHtml;
 
-    loadData();
-  </script>
-</body>
-</html>`;
-}
+//       } catch (err) {
+//         console.error('Failed to load admin data:', err);
+//         document.getElementById('stats').innerHTML = '<p style="color:var(--danger)">Failed to load data. Check console.</p>';
+//       } finally {
+//         const btn = document.querySelector('.refresh-btn');
+//         if (btn) {
+//           btn.disabled = false;
+//           btn.textContent = '↻ Refresh';
+//         }
+//       }
+//     }
+
+//     loadData();
+//   </script>
+// </body>
+// </html>`;
+// }
