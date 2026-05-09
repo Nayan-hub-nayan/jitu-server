@@ -17,10 +17,14 @@
   "dependencies": {
     "@notionhq/client": "^2.3.0",
     "@supabase/supabase-js": "^2.49.0",
+    "@upstash/ratelimit": "^2.0.8",
+    "@upstash/redis": "^1.38.0",
     "cors": "^2.8.6",
+    "crypto-js": "^4.2.0",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
-    "openai": "^6.35.0"
+    "openai": "^6.35.0",
+    "resend": "^6.12.3"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
