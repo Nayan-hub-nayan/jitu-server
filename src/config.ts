@@ -16,11 +16,11 @@ function optionalEnv(name: string): string | undefined {
 }
 
 export const config = {
-  // MiniMax (OpenAI-compatible)
-  minimax: {
+  // LLM configuration (OpenRouter)
+  llm: {
     baseUrl: requireEnv('OPENAI_BASE_URL'),
     apiKey: requireEnv('OPENAI_API_KEY'),
-    model: 'MiniMax-M2.7',
+    model: 'openai/gpt-oss-120b:free',
   },
 
   // Gemini embeddings
@@ -49,9 +49,11 @@ export const config = {
   allowedOrigins: [
     'https://askakash.com',
     'https://predictable-feel-940249.framer.app',
+    'https://ultrafolio.framer.website',
     /^https:\/\/.*\.framer\.app$/,   // Framer preview domains (regex for wildcard)
     'http://localhost:3000',
     'http://localhost:5173',
     'http://localhost:3001',
+
   ],
 } as const;

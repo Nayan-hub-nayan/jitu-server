@@ -3,10 +3,14 @@ import OpenAI from "openai";
 import express from "express";
 import cors from "cors";
 
-// ── OpenAI client (pointed at MiniMax) ──────────────────────────
+// ── OpenAI client (pointed at OpenRouter) ──────────────────────────
 const client = new OpenAI({
-  baseURL: process.env.OPENAI_BASE_URL,
+  baseURL: "https://openrouter.ai/api/v1", // Using OpenRouter base URL (without /chat/completions)
   apiKey: process.env.OPENAI_API_KEY,
+  defaultHeaders: {
+    "HTTP-Referer": "https://askakash.com", // Optional, replace with your site URL
+    "X-Title": "Smart Portfolio Server", // Optional, replace with your site name
+  }
 });
 
 const SYSTEM_PROMPT = "You are a friendly and professional AI assistant.";
@@ -37,7 +41,7 @@ app.post("/api/chat", async (req, res) => {
 
   try {
     const completion = await client.chat.completions.create({
-      model: "MiniMax-M2.7",
+      model: "openai/gpt-oss-120b:free",
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
         { role: "user", content: message },
@@ -77,7 +81,7 @@ app.post("/api/chat/stream", async (req, res) => {
 
   try {
     const stream = await client.chat.completions.create({
-      model: "MiniMax-M2.7",
+      model: "openai/gpt-oss-120b:free",
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
         { role: "user", content: message },
@@ -108,7 +112,7 @@ app.post("/api/chat/stream", async (req, res) => {
 
 // ── Health check ────────────────────────────────────────────────
 app.get("/api/health", (req, res) => {
-  res.json({ status: "ok", model: "MiniMax-M2.7" });
+  res.json({ status: "ok", model: "openai/gpt-oss-120b:free" });
 });
 
 // ── Start server (or export for Vercel) ─────────────────────────

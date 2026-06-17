@@ -7,7 +7,8 @@
     "build": "tsc",
     "dev": "tsx watch src/server.ts",
     "start": "node dist/server.js",
-    "sync": "tsx src/sync-notion.ts",
+    "sync": "tsx src/test-notion.ts",
+    "chat": "tsx scratch/test-chat.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
