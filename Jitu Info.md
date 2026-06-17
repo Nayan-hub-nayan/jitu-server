@@ -235,21 +235,29 @@ COSMOQ is a production-ready Framer template designed for AI-first startups, ent
 
 [https://www.framer.com/community/marketplace/templates/cosmoq/](https://www.framer.com/community/marketplace/templates/cosmoq/)
 
+Image \- [https://cdn.lemonsqueezy.com/media/113485/dceb0342-1742-48cc-a17c-8491c63e826c.png?fit=contain\&format=auto\&height=1000\&ixlib=php-3.3.1\&width=1000](https://cdn.lemonsqueezy.com/media/113485/dceb0342-1742-48cc-a17c-8491c63e826c.png?fit=contain&format=auto&height=1000&ixlib=php-3.3.1&width=1000)
+
 GeniAI · AI Mobile App Template
 
 GeniAI App Template is a high-quality Framer template tailored for AI-driven apps and productivity-focused solutions. Designed with a sleek, modern aesthetic and built for seamless customization, it enables you to create a visually stunning and user-friendly website in no time. Whether you’re launching a new app or enhancing your online presence, GeniAI App Template provides the perfect platform to captivate your audience and showcase your app’s capabilities.
 
 [https://www.framer.com/community/marketplace/templates/geniai/](https://www.framer.com/community/marketplace/templates/geniai/)
 
-Careon · Non-Profit & Charity Template
+Image \- [https://cdn.lemonsqueezy.com/media/113485/bcd6cb0f-98dc-45d3-9031-d947826d5be3.png?fit=contain\&format=auto\&height=1000\&ixlib=php-3.3.1\&width=1000](https://cdn.lemonsqueezy.com/media/113485/bcd6cb0f-98dc-45d3-9031-d947826d5be3.png?fit=contain&format=auto&height=1000&ixlib=php-3.3.1&width=1000)
 
-Careon is a purpose-driven Framer template designed to empower non-profits, charities, and social impact organizations to create meaningful change online. With its warm, compassionate design and easy customization, Careon helps you share your mission, inspire supporters, and raise funds effortlessly. Build dedicated pages for programs, donation projects, and causes — all powered by Framer CMS — so you can update campaigns, stories, and impact stats with ease. From emotional storytelling to secure donation flows, every section of Careon is crafted to build trust and inspire generosity. Whether you’re supporting communities, protecting the environment, or driving education and health initiatives, Careon gives your organization the platform it deserves — one that connects hearts, builds awareness, and turns compassion into action.
+Cawar · AI and SaaS Startup Template
 
-[https://www.framer.com/community/marketplace/templates/careon/](https://www.framer.com/community/marketplace/templates/careon/)
+Cawar is a premium Framer template designed for SaaS startups and tech businesses looking to create a high-impact online presence. With a modern, conversion-focused layout and easy customization, Cawar helps you launch a professional website in minutes—no coding required. Perfect for showcasing your product, attracting users, and driving sign-ups, this template ensures a seamless experience for both you and your visitors.Why Choose Cawar? Designed for an intuitive user experience, Cawar is optimized for performance, engagement, and conversions. Its clean structure ensures your audience quickly understands your SaaS’s value, while trust-building elements like testimonials and social proof enhance credibility.
 
-Athlix · Multi-Sports Academy Template
+[https://www.framer.com/community/marketplace/templates/cawar/](https://www.framer.com/community/marketplace/templates/cawar/)
 
-Athlix is crafted to capture the energy and professionalism of modern sports environments. It features well-structured pages for sports categories, coaching staff, events, and blog content—allowing you to present everything clearly and effectively. From highlighting your facilities to promoting tournaments and training programs, every section is designed to enhance user experience and drive engagement. With a fully responsive and intuitive layout, Athlix ensures a seamless browsing experience across all devices. Its flexible structure and easy customization in Framer allow you to quickly adapt the template to your brand—without writing a single line of code.
+Image \- [https://cdn.lemonsqueezy.com/media/113485/005d3758-a0c4-4efd-9b5b-dc8f1e0ba94d.png?fit=contain\&format=auto\&height=1000\&ixlib=php-3.3.1\&width=1000](https://cdn.lemonsqueezy.com/media/113485/005d3758-a0c4-4efd-9b5b-dc8f1e0ba94d.png?fit=contain&format=auto&height=1000&ixlib=php-3.3.1&width=1000)
 
-[https://www.framer.com/community/marketplace/templates/athlix/](https://www.framer.com/community/marketplace/templates/athlix/)
+Eventis · Free Event Template
+
+Eventis is built for optimal performance, engagement, and user interaction. Its clean, responsive design makes it easy for attendees to navigate and find all essential information. Whether it’s for a tech summit, AI conference, or industry networking event, Eventis helps you capture attention and keep visitors engaged.
+
+[https://www.framer.com/community/marketplace/templates/eventis/](https://www.framer.com/community/marketplace/templates/eventis/)
+
+Image \- [https://cdn.lemonsqueezy.com/media/113485/cf341dad-9dc1-46b1-9e85-8f3ad45318f0.png?fit=contain\&format=auto\&height=1000\&ixlib=php-3.3.1\&width=1000](https://cdn.lemonsqueezy.com/media/113485/cf341dad-9dc1-46b1-9e85-8f3ad45318f0.png?fit=contain&format=auto&height=1000&ixlib=php-3.3.1&width=1000)
 

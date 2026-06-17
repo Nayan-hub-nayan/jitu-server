@@ -58,6 +58,7 @@ async function main() {
   await runTest("Who is Jitu?");
   await runTest("Tell me about your projects and templates.");
   await runTest("What is COSMOQ?");
+  await runTest("What is Cawar?");
 }
 
 main().catch(console.error);
