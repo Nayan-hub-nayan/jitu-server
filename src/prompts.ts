@@ -2,10 +2,10 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-// Resolve the absolute path to the Jitu Info.md file located in the parent directory
+// Resolve the absolute path to the Jitu Info.md file located in the project root directory
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const JITU_INFO_PATH = path.resolve(__dirname, '../../Jitu Info.md');
+const JITU_INFO_PATH = path.resolve(__dirname, '../Jitu Info.md');
 
 /**
  * Reads and returns the complete text of Jitu Info.md
