@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ask Akash — Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/admin.css">
+</head>
+<body>
+  <header>
+    <div class="header-inner">
+      <div>
+        <h1>🔍 Ask Akash — Admin</h1>
+        <p class="subtitle">Review low-confidence answers, monitor top queries, and track usage.</p>
+      </div>
+      <button id="refresh-btn" class="refresh-btn" onclick="loadData()">↻ Refresh</button>
+    </div>
+  </header>
+
+  <main>
+    <div id="stats" class="stats-grid">
+      <div class="loading">Loading stats…</div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('low-conf', this)">Low Confidence</button>
+      <button class="tab" onclick="switchTab('top-queries', this)">Top Queries</button>
+    </div>
+
+    <div id="low-conf" class="panel active">
+      <div class="loading">Loading…</div>
+    </div>
+    <div id="top-queries" class="panel">
+      <div class="loading">Loading…</div>
+    </div>
+  </main>
+
+  <script src="/admin.js"></script>
+</body>
+</html>
